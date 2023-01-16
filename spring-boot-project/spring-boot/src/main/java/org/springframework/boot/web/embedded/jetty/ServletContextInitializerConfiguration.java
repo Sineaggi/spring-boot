@@ -17,9 +17,10 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import jakarta.servlet.ServletException;
-import org.eclipse.jetty.webapp.AbstractConfiguration;
-import org.eclipse.jetty.webapp.Configuration;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
+import org.eclipse.jetty.ee10.webapp.Configuration;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
@@ -70,11 +71,8 @@ public class ServletContextInitializerConfiguration extends AbstractConfiguratio
 	}
 
 	private void setExtendedListenerTypes(WebAppContext context, boolean extended) {
-		try {
-			context.getServletContext().setExtendedListenerTypes(extended);
-		}
-		catch (NoSuchMethodError ex) {
-			// Not available on Jetty 8
+		if (context.getServletContext() instanceof ServletContextHandler.ServletContextApi servletContextApi) {
+			servletContextApi.setExtendedListenerTypes(extended);
 		}
 	}
 

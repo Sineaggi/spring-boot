@@ -22,10 +22,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 
+import org.eclipse.jetty.util.Callback;
 import org.springframework.boot.web.server.Compression;
 
 /**
@@ -38,7 +40,7 @@ final class JettyHandlerWrappers {
 	private JettyHandlerWrappers() {
 	}
 
-	static HandlerWrapper createGzipHandlerWrapper(Compression compression) {
+	static Handler.Wrapper createGzipHandlerWrapper(Compression compression) {
 		GzipHandler handler = new GzipHandler();
 		handler.setMinGzipSize((int) compression.getMinResponseSize().toBytes());
 		handler.setIncludedMimeTypes(compression.getMimeTypes());
@@ -48,14 +50,14 @@ final class JettyHandlerWrappers {
 		return handler;
 	}
 
-	static HandlerWrapper createServerHeaderHandlerWrapper(String header) {
+	static Handler.Wrapper createServerHeaderHandlerWrapper(String header) {
 		return new ServerHeaderHandler(header);
 	}
 
 	/**
-	 * {@link HandlerWrapper} to add a custom {@code server} header.
+	 * {@link Handler.Wrapper} to add a custom {@code server} header.
 	 */
-	private static class ServerHeaderHandler extends HandlerWrapper {
+	private static class ServerHeaderHandler extends Handler.Wrapper {
 
 		private static final String SERVER_HEADER = "server";
 
@@ -65,15 +67,49 @@ final class JettyHandlerWrappers {
 			this.value = value;
 		}
 
-		@Override
-		public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-				throws IOException, ServletException {
-			if (!response.getHeaderNames().contains(SERVER_HEADER)) {
-				response.setHeader(SERVER_HEADER, this.value);
-			}
-			super.handle(target, baseRequest, request, response);
-		}
+
+
+		//todo
+		//@Override
+		//public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+		//		throws IOException, ServletException {
+		//	if (!response.getHeaderNames().contains(SERVER_HEADER)) {
+		//		response.setHeader(SERVER_HEADER, this.value);
+		//	}
+		//	super.handle(target, baseRequest, request, response);
+		//}
 
 	}
+
+	//static class YourWrapperProcessor extends Request.WrapperProcessor {
+	//	public YourWrapperProcessor(Request request) {
+	//		super(request);
+	//	}
+//
+	//	@Override
+	//	public void process(Request ignored, Response response, Callback callback) throws Exception {
+//
+	//		response.getHeaders().contains(SERVER_HEADER);
+	//		if (!response.getHeaderNames().contains(SERVER_HEADER)) {
+	//			response.setHeader(SERVER_HEADER, this.value);
+	//		}
+//
+	//		super.process(ignored, response, callback);
+	//	}
+	//}
+//
+	////Handler.Processor
+//
+	//class YourHandler extends Handler.Wrapper
+	//{
+	//	public Processor handle(Request request) throws Exception
+	//	{
+	//		// Wrap the request.
+	//		Request.WrapperProcessor wrapped = new YourWrapperProcessor(request);
+//
+	//		// Delegate processing using the wrapped request to wrap a Processor.
+	//		return wrapped.wrapProcessor(super.handle(wrapped));
+	//	}
+	//}
 
 }

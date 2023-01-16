@@ -16,13 +16,14 @@
 
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
-import org.eclipse.jetty.webapp.AbstractConfiguration;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.webapp.AbstractConfiguration;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.websocket.core.server.WebSocketMappings;
 import org.eclipse.jetty.websocket.core.server.WebSocketServerComponents;
-import org.eclipse.jetty.websocket.jakarta.server.internal.JakartaWebSocketServerContainer;
-import org.eclipse.jetty.websocket.server.JettyWebSocketServerContainer;
-import org.eclipse.jetty.websocket.servlet.WebSocketUpgradeFilter;
+import org.eclipse.jetty.ee10.websocket.jakarta.server.internal.JakartaWebSocketServerContainer;
+import org.eclipse.jetty.ee10.websocket.server.JettyWebSocketServerContainer;
+import org.eclipse.jetty.ee10.websocket.servlet.WebSocketUpgradeFilter;
 
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -45,17 +46,19 @@ public class JettyWebSocketServletWebServerCustomizer
 
 			@Override
 			public void configure(WebAppContext context) throws Exception {
-				if (JettyWebSocketServerContainer.getContainer(context.getServletContext()) == null) {
+				if (JettyWebSocketServerContainer.getContainer(context.getServletContext()) == null
+						&& context.getServletContext() instanceof ServletContextHandler.ServletContextApi servletContextApi) {
 					WebSocketServerComponents.ensureWebSocketComponents(context.getServer(),
-							context.getServletContext());
+							servletContextApi.getContextHandler());
 					JettyWebSocketServerContainer.ensureContainer(context.getServletContext());
 				}
-				if (JakartaWebSocketServerContainer.getContainer(context.getServletContext()) == null) {
+				if (JakartaWebSocketServerContainer.getContainer(context.getServletContext()) == null
+						&& context.getServletContext() instanceof ServletContextHandler.ServletContextApi servletContextApi) {
 					WebSocketServerComponents.ensureWebSocketComponents(context.getServer(),
-							context.getServletContext());
-					WebSocketUpgradeFilter.ensureFilter(context.getServletContext());
-					WebSocketMappings.ensureMappings(context.getServletContext());
-					JakartaWebSocketServerContainer.ensureContainer(context.getServletContext());
+							servletContextApi.getContextHandler());
+					WebSocketUpgradeFilter.ensureFilter(servletContextApi);
+					WebSocketMappings.ensureMappings(servletContextApi.getContextHandler());
+					JakartaWebSocketServerContainer.ensureContainer(servletContextApi);
 				}
 			}
 

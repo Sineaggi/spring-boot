@@ -32,7 +32,7 @@ import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.util.resource.Resource;
+import org.eclipse.jetty.util.resource.ResourceFactory;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.boot.web.server.Http2;
@@ -231,7 +231,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		else {
 			try {
 				URL url = ResourceUtils.getURL(keystoreLocation);
-				factory.setKeyStoreResource(Resource.newResource(url));
+				factory.setKeyStoreResource(ResourceFactory.root().newResource(url));
 			}
 			catch (Exception ex) {
 				throw new WebServerException("Could not load key store '" + keystoreLocation + "'", ex);
@@ -250,7 +250,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		if (ssl.getTrustStore() != null) {
 			try {
 				URL url = ResourceUtils.getURL(ssl.getTrustStore());
-				factory.setTrustStoreResource(Resource.newResource(url));
+				factory.setTrustStoreResource(ResourceFactory.root().newResource(url));
 			}
 			catch (IOException ex) {
 				throw new WebServerException("Could not find trust store '" + ssl.getTrustStore() + "'", ex);

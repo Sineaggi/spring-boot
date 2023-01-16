@@ -38,7 +38,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
-import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -159,7 +158,6 @@ class ServletComponentScanIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Servlet5ClassPathOverrides
 	static class JettyTestConfiguration extends AbstractTestConfiguration {
 
 		@Override

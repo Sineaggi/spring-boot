@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import io.undertow.Undertow;
-import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import reactor.netty.http.server.HttpServer;
 
 import org.springframework.beans.factory.ObjectProvider;

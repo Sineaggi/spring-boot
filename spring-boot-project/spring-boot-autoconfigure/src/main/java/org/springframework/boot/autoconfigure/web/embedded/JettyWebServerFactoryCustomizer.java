@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.CustomRequestLog;
@@ -28,9 +29,7 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.RequestLogWriter;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.util.BlockingArrayQueue;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
@@ -120,19 +119,19 @@ public class JettyWebServerFactoryCustomizer
 
 			@Override
 			public void customize(Server server) {
-				setHandlerMaxHttpFormPostSize(server.getHandlers());
+				setHandlerMaxHttpFormPostSize(server.getHandlers().toArray(Handler[]::new));
 			}
 
 			private void setHandlerMaxHttpFormPostSize(Handler... handlers) {
 				for (Handler handler : handlers) {
-					if (handler instanceof ContextHandler contextHandler) {
+					if (handler instanceof ServletContextHandler contextHandler) {
 						contextHandler.setMaxFormContentSize(maxHttpFormPostSize);
 					}
-					else if (handler instanceof HandlerWrapper wrapper) {
+					else if (handler instanceof Handler.Wrapper wrapper) {
 						setHandlerMaxHttpFormPostSize(wrapper.getHandler());
 					}
-					else if (handler instanceof HandlerCollection collection) {
-						setHandlerMaxHttpFormPostSize(collection.getHandlers());
+					else if (handler instanceof ContextHandlerCollection collection) {
+						setHandlerMaxHttpFormPostSize(collection.getHandlers().toArray(Handler[]::new));
 					}
 				}
 			}

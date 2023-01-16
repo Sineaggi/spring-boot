@@ -38,7 +38,7 @@ import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.tomcat.util.net.AbstractEndpoint;
-import org.eclipse.jetty.server.HttpChannel;
+import org.eclipse.jetty.ee10.servlet.ServletChannel;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
@@ -51,7 +51,6 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
-import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -460,7 +459,6 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	@Servlet5ClassPathOverrides
 	void jettyThreadPoolPropertyDefaultsShouldMatchServerDefault() {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer();
@@ -475,7 +473,6 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	@Servlet5ClassPathOverrides
 	void jettyMaxHttpFormPostSizeMatchesDefault() {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory
@@ -492,7 +489,7 @@ class ServerPropertiesTests {
 		jetty.start();
 		org.eclipse.jetty.server.Connector connector = jetty.getServer().getConnectors()[0];
 		final AtomicReference<Throwable> failure = new AtomicReference<>();
-		connector.addBean(new HttpChannel.Listener() {
+		connector.addBean(new ServletChannel.Listener() {
 
 			@Override
 			public void onDispatchFailure(Request request, Throwable ex) {

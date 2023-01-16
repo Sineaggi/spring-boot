@@ -17,6 +17,7 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,7 +27,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.ee10.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.util.Callback;
 
 /**
  * Variation of Jetty's {@link ErrorPageErrorHandler} that supports all {@link HttpMethod
@@ -47,13 +50,22 @@ class JettyEmbeddedErrorHandler extends ErrorPageErrorHandler {
 		return true;
 	}
 
+	//@Override
+	//public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
+	//		throws IOException, ServletException {
+	//	if (!HANDLED_HTTP_METHODS.contains(baseRequest.getMethod())) {
+	//		baseRequest.setMethod("GET");
+	//	}
+	//	super.handle(target, baseRequest, request, response);
+	//}
+
 	@Override
-	public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
-			throws IOException, ServletException {
-		if (!HANDLED_HTTP_METHODS.contains(baseRequest.getMethod())) {
-			baseRequest.setMethod("GET");
-		}
-		super.handle(target, baseRequest, request, response);
+	public void process(Request request, Response response, Callback callback) throws Exception {
+		super.process(request, response, callback);
 	}
 
+	@Override
+	protected void handleErrorPage(HttpServletRequest request, Writer writer, int code, String message) throws IOException {
+		super.handleErrorPage(request, writer, code, message);
+	}
 }

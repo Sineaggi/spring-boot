@@ -41,14 +41,6 @@ configurations {
 	}
 }
 
-dependencyManagement {
-	jetty {
-		dependencies {
-			dependency "jakarta.servlet:jakarta.servlet-api:5.0.0"
-		}
-	}
-}
-
 tasks.register("resourcesJar", Jar) { jar -> 
 	def nested = project.resources.text.fromString("nested")
 	from(nested) {
