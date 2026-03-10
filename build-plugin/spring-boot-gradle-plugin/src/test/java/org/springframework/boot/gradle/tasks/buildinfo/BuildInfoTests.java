@@ -183,7 +183,7 @@ class BuildInfoTests {
 	private Properties buildInfoProperties(BuildInfo task) {
 		task.generateBuildProperties();
 		return buildInfoProperties(
-				new File(task.getDestinationDir().get().getAsFile(), "META-INF/build-info.properties"));
+				new File(task.getDestinationDir().get().getAsFile(), "build-info.properties"));
 	}
 
 	private Properties buildInfoProperties(File file) {

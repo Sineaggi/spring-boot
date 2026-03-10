@@ -29,6 +29,7 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.language.jvm.tasks.ProcessResources;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
@@ -93,11 +94,10 @@ public class SpringBootExtension {
 		TaskProvider<BuildInfo> bootBuildInfo = tasks.register("bootBuildInfo", BuildInfo.class,
 				this::configureBuildInfoTask);
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
-			SourceSetContainer sourceSets = this.project.getExtensions()
-				.getByType(JavaPluginExtension.class)
-				.getSourceSets();
-			sourceSets.named(SourceSet.MAIN_SOURCE_SET_NAME)
-				.configure((sourceSet) -> sourceSet.getResources().srcDirs(bootBuildInfo));
+			tasks.named(JavaPlugin.PROCESS_RESOURCES_TASK_NAME, ProcessResources.class, (processResources -> {
+				processResources.from(bootBuildInfo)
+						.into("META-INF");
+			}));
 			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties()
 				.getArtifact()
 				.convention(this.project.provider(this::determineArtifactBaseName)));
@@ -109,9 +109,9 @@ public class SpringBootExtension {
 
 	private void configureBuildInfoTask(BuildInfo task) {
 		task.setGroup(BasePlugin.BUILD_GROUP);
-		task.setDescription("Generates a META-INF/build-info.properties file.");
+		task.setDescription("Generates a build-info.properties file.");
 		task.getDestinationDir()
-			.convention(this.project.getLayout().getBuildDirectory().dir("generated/boot-build-info"));
+			.convention(this.project.getLayout().getBuildDirectory().dir("buildInfo"));
 	}
 
 	private @Nullable String determineArtifactBaseName() {

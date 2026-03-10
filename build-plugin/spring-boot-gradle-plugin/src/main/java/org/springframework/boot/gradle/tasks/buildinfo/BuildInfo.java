@@ -70,7 +70,7 @@ public abstract class BuildInfo extends DefaultTask {
 					this.properties.getArtifactIfNotExcluded(), this.properties.getVersionIfNotExcluded(),
 					this.properties.getNameIfNotExcluded(), this.properties.getTimeIfNotExcluded(),
 					this.properties.getAdditionalIfNotExcluded());
-			new BuildPropertiesWriter(new File(getDestinationDir().get().getAsFile(), "META-INF/build-info.properties"))
+			new BuildPropertiesWriter(new File(getDestinationDir().get().getAsFile(), "build-info.properties"))
 				.writeBuildProperties(details);
 		}
 		catch (IOException ex) {
