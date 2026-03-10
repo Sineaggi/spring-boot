@@ -111,19 +111,7 @@ public class SpringBootExtension {
 		task.setGroup(BasePlugin.BUILD_GROUP);
 		task.setDescription("Generates a META-INF/build-info.properties file.");
 		task.getDestinationDir()
-			.convention(this.project.getLayout()
-				.dir(this.project.provider(() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"))));
-	}
-
-	private File determineMainSourceSetResourcesOutputDir() {
-		File resourcesDir = this.project.getExtensions()
-			.getByType(JavaPluginExtension.class)
-			.getSourceSets()
-			.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
-			.getOutput()
-			.getResourcesDir();
-		Assert.state(resourcesDir != null, "'resourcesDir' must not be null");
-		return resourcesDir;
+			.convention(this.project.getLayout().getBuildDirectory().dir("generated/boot-build-info"));
 	}
 
 	private @Nullable String determineArtifactBaseName() {
